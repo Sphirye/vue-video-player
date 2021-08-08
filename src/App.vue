@@ -18,3 +18,13 @@ export default class App extends Vue {
 }
 
 </script>
+
+<style>
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}
+</style>
