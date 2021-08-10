@@ -1,107 +1,96 @@
 <template>
-  <v-container class="my-3" fluid>
+  <v-container ref="videoContainer" class="ma-0 pa-0 grey darken-4" style="position: relative;" fluid>
 
-    <v-row justify="center" align="center">
+    <v-row justify="center" @mousemove="(e) => { mouseDebounce() }" no-gutters>
 
-      <v-col cols="9">
-        <div ref="videoContainer" @mousemove="(e) => { mouseDebounce() }">
+      <v-col cols="12" class="video-container d-flex justify-center align-end">
+        <video
+          :class="`${ fullscreen ? 'video-fullscreen' : 'video-windowed'}`"
+          src="@/assets/dance.mp4"
+          ref="player" 
+          @playing="playing = true"
+          @pause="playing = false"
+          @loadedmetadata="mountPlayer()"
+          @timeupdate="timeUpdate()"
+          @click="play()"
+        ></video>
 
-          <v-container class="ma-0 pa-0 grey darken-4 full-width full-height" fluid>
-            <v-row class="video-container full-width full-height" align="end" justify="center" no-gutters style="position: relative;">
+        <v-row :class="`${ hidedControlbar ? 'hided' : '' } overlay-container`" style=" background:rgba(0, 0, 0, 0.521);" no-gutters>
+          <v-col cols="1" class="d-flex flex-row justify-space-around">
+            <v-btn large icon @click="play()">
+              <v-icon color="white" large> far {{ playing ? "fa-pause-circle" : "fa-play-circle" }} </v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="10" class="d-flex flex-column justify-center">
+            <input 
+              class="mx-3 styled-slider slider-progress"
+              type="range" 
+              ref="timebar" 
+              value="0"
+              min="0" 
+              max="100"
+              @click="v => setCurrentTime(v.target.value)"
+              @input="v => setCurrentTime(v.target.value)"
+            >
+          </v-col>
+          <v-col cols="1" class="d-flex flex-row justify-space-around overlay-content">
+            <v-btn large icon @click="switchMute()">
+              <v-icon color="white" large>{{ muted ? "mdi-volume-mute" : "mdi-volume-high" }}</v-icon>
+            </v-btn>
+            <v-btn large icon @click="switchFullscreen()">
+              <v-icon color="white" large> mdi-fullscreen </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
 
-              <video
-               :class="`${ fullscreen ? 'video-fullscreen' : 'video-windowed' }`"
-                src="@/assets/dance.mp4"
-                ref="player" 
-                @playing="playing = true"
-                @pause="playing = false"
-                @loadedmetadata="mountPlayer()"
-                @timeupdate="timeUpdate()"
-                @click="play()"
-              ></video>
-
-              <v-container :class="`overlay-container ${ hidedControlbar ? 'hided' : '' }`" style=" background:rgba(0, 0, 0, 0.521);" fluid>
-                <v-row class="overlay-content" align="center" justify="center" no-gutters>
-                  <div style="width: 5%;">
-                    <v-btn large icon @click="play()">
-                      <v-icon color="white" large> far {{ playing ? "fa-pause-circle" : "fa-play-circle" }} </v-icon>
-                    </v-btn>
-                  </div>
-                  <div class="d-flex justify-center align-center wrap" style="width: 85%;">
-                    <input 
-                      class="full-width mx-3 styled-slider slider-progress"
-                      type="range" 
-                      ref="timebar" 
-                      value="0" 
-                      min="0" 
-                      max="100" 
-                      @click="v => setCurrentTime(v.target.value)"
-                      @input="v => setCurrentTime(v.target.value)"
-                    >
-                  </div>
-                  <v-spacer/>
-                  <div style="width: 5%;">
-                    <v-btn large icon @click="switchMute()">
-                      <v-icon color="white" large>{{ muted ? "mdi-volume-mute" : "mdi-volume-high" }}</v-icon>
-                    </v-btn>
-                  </div>
-                  <div style="width: 5%;">
-                    <v-btn large icon @click="switchFullscreen()">
-                      <v-icon color="white" large> mdi-fullscreen </v-icon>
-                    </v-btn>
-                  </div>
-                </v-row>
-              </v-container>
-
-            </v-row>
-          </v-container>
-        </div>
       </v-col>
 
-      <v-col cols="3" v-if="true">
-        <v-list two-line dark v-if="mountedPlayer">
-
-          <v-list-item>
-            <v-list-item-title>Playing</v-list-item-title>
-            <v-list-item-subtitle>{{ playing }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>muted</v-list-item-title>
-            <v-list-item-subtitle>{{ muted }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Duration</v-list-item-title>
-            <v-list-item-subtitle>{{ player().duration }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Current Time</v-list-item-title>
-            <v-list-item-subtitle>{{ currentTime }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Current Percentage Time</v-list-item-title>
-            <v-list-item-subtitle>{{ parseInt(percentage(currentTime, player().duration)) }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Fullscreen</v-list-item-title>
-            <v-list-item-subtitle>{{ fullscreen }}</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Overlay</v-list-item-title>
-              <v-btn @click="hidedControlbar = true">Hide</v-btn>
-              <v-btn @click="hidedControlbar = false">Show</v-btn>
-          </v-list-item>
-
-        </v-list>
-      </v-col>
-
-
+      
     </v-row>
+
+
+    <!--v-row no-gutters v-if="false">
+      <v-col cols="3">
+          <v-list two-line dark v-if="mountedPlayer">
+            <v-list-item>
+              <v-list-item-title>Playing</v-list-item-title>
+              <v-list-item-subtitle>{{ playing }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>muted</v-list-item-title>
+              <v-list-item-subtitle>{{ muted }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Duration</v-list-item-title>
+              <v-list-item-subtitle>{{ player().duration }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Current Time</v-list-item-title>
+              <v-list-item-subtitle>{{ currentTime }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Current Percentage Time</v-list-item-title>
+              <v-list-item-subtitle>{{ parseInt(percentage(currentTime, player().duration)) }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Fullscreen</v-list-item-title>
+              <v-list-item-subtitle>{{ fullscreen }}</v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>Overlay</v-list-item-title>
+                <v-btn @click="hidedControlbar = true">Hide</v-btn>
+                <v-btn @click="hidedControlbar = false">Show</v-btn>
+            </v-list-item>
+
+          </v-list>
+      </v-col>
+    </v-row-->
 
   </v-container>
 </template>
@@ -120,8 +109,9 @@ export default class DefaultComponent extends Vue {
   mountedPlayer: boolean = false
   currentTime: number = NaN
   fullscreen: boolean = false
-
   hidedControlbar: boolean = false
+  debounceTimeoutId: any
+
 
   player(): HTMLMediaElement { //@ts-ignore
     return this.$refs.player
@@ -181,11 +171,8 @@ export default class DefaultComponent extends Vue {
     }
   }
 
-  debounceTimeoutId: any
-
   mouseDebounce() {
     clearTimeout(this.debounceTimeoutId)
-
     this.hidedControlbar = false
 
     this.debounceTimeoutId = setTimeout(() => {
@@ -210,26 +197,29 @@ export default class DefaultComponent extends Vue {
     this.currentTime = this.player().currentTime
     this.mountedPlayer = true
   }
+
+  @Watch("$vuetify.breakpoint.name")
+  onBreakpointChanged() {
+    console.log(this.$vuetify.breakpoint.name)
+  }
 }
 
 </script>
 
 <style>
-
 .video-windowed {
+  position:inherit;
   width: auto;
-  height: 500px;
-  outline :none;
-  outline: 0;
+  height: auto;
 }
 
 .video-fullscreen {
   width: auto;
-  height: 100%;
+  height: auto;
 }
 
 .overlay-container {
-  position: absolute;
+  position:absolute;
   width: 100%;
 
   opacity: 1;
@@ -237,8 +227,6 @@ export default class DefaultComponent extends Vue {
   -webkit-transition: opacity 0.1s ease-in;
   -moz-transition: opacity 0.1s ease-in;
   -o-transition: opacity 0.1s ease-in;
-
-  pointer-events: none;
 }
 
 .overlay-content {
