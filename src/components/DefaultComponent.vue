@@ -1,45 +1,57 @@
 <template>
-  <v-container ref="videoContainer" class="ma-0 pa-0 grey darken-4" style="position: relative;" fluid>
+  <div ref="videoContainer" @mousemove="(e) => { mouseDebounce() }" class="d-flex flex-row justify-center align-end" style="height: 500px;">
+    <video
+      :class="`${ fullscreen ? 'video-fullscreen' : 'video-windowed'}`"
+      src="@/assets/dance.mp4"
+      ref="player" 
+      @playing="playing = true"
+      @pause="playing = false"
+      @loadedmetadata="mountPlayer()"
+      @timeupdate="timeUpdate()"
+      @click="play()"
+    ></video>
 
-    <v-row justify="center" @mousemove="(e) => { mouseDebounce() }" no-gutters>
+    <div  :class="`d-flex justify-space-around align-center pa-3 overlay-container ${ hidedControlbar ? 'hided' : '' }`" style="background:rgba(0, 0, 0, 0.521);">
+
+      <v-btn large icon @click="play()">
+        <v-icon color="white" large> far {{ playing ? "fa-pause-circle" : "fa-play-circle" }} </v-icon>
+      </v-btn>
+
+      <input 
+        class="mx-3 styled-slider slider-progress"
+        type="range" 
+        ref="timebar" 
+        style="width: 100%;"
+        value="0"
+        min="0" 
+        max="100"
+        @click="v => setCurrentTime(v.target.value)"
+        @input="v => setCurrentTime(v.target.value)"
+      >
+
+      <v-btn large icon @click="switchMute()">
+        <v-icon color="white" large>{{ muted ? "mdi-volume-mute" : "mdi-volume-high" }}</v-icon>
+      </v-btn>
+      <v-btn large icon @click="switchFullscreen()">
+        <v-icon color="white" large> mdi-fullscreen </v-icon>
+      </v-btn>
+
+    </div>
+
+  </div>
+  <!--v-container class="ma-0 pa-0 grey darken-4" style="position: relative;" fluid>
+
+    <v-row justify="center" no-gutters>
 
       <v-col cols="12" class="video-container d-flex justify-center align-end">
-        <video
-          :class="`${ fullscreen ? 'video-fullscreen' : 'video-windowed'}`"
-          src="@/assets/dance.mp4"
-          ref="player" 
-          @playing="playing = true"
-          @pause="playing = false"
-          @loadedmetadata="mountPlayer()"
-          @timeupdate="timeUpdate()"
-          @click="play()"
-        ></video>
+        
 
-        <v-row :class="`${ hidedControlbar ? 'hided' : '' } overlay-container`" style=" background:rgba(0, 0, 0, 0.521);" no-gutters>
+        <v-row :class="`${ hidedControlbar ? 'hided' : '' } overlay-container`"  no-gutters>
           <v-col cols="1" class="d-flex flex-row justify-space-around">
-            <v-btn large icon @click="play()">
-              <v-icon color="white" large> far {{ playing ? "fa-pause-circle" : "fa-play-circle" }} </v-icon>
-            </v-btn>
           </v-col>
           <v-col cols="10" class="d-flex flex-column justify-center">
-            <input 
-              class="mx-3 styled-slider slider-progress"
-              type="range" 
-              ref="timebar" 
-              value="0"
-              min="0" 
-              max="100"
-              @click="v => setCurrentTime(v.target.value)"
-              @input="v => setCurrentTime(v.target.value)"
-            >
           </v-col>
           <v-col cols="1" class="d-flex flex-row justify-space-around overlay-content">
-            <v-btn large icon @click="switchMute()">
-              <v-icon color="white" large>{{ muted ? "mdi-volume-mute" : "mdi-volume-high" }}</v-icon>
-            </v-btn>
-            <v-btn large icon @click="switchFullscreen()">
-              <v-icon color="white" large> mdi-fullscreen </v-icon>
-            </v-btn>
           </v-col>
         </v-row>
 
@@ -49,7 +61,7 @@
     </v-row>
 
 
-    <!--v-row no-gutters v-if="false">
+    <v-row no-gutters v-if="false">
       <v-col cols="3">
           <v-list two-line dark v-if="mountedPlayer">
             <v-list-item>
@@ -90,9 +102,8 @@
 
           </v-list>
       </v-col>
-    </v-row-->
-
-  </v-container>
+    </v-row>
+  </v-container-->
 </template>
 
 <script lang="ts">
@@ -186,6 +197,7 @@ export default class DefaultComponent extends Vue {
   timeUpdate() {
     this.currentTime = this.player().currentTime //@ts-ignore
     this.$refs.timebar.value = this.percentage(this.currentTime, this.player().duration)
+    this.$forceUpdate()
   }
 
   setCurrentTime(v: number) {
@@ -207,10 +219,18 @@ export default class DefaultComponent extends Vue {
 </script>
 
 <style>
-.video-windowed {
-  position:inherit;
-  width: auto;
+.video-container {
+  position: relative;
+}
+
+video {
   height: auto;
+  max-height: 100%;
+}
+
+.video-windowed {
+  width:auto;
+  height:100%;
 }
 
 .video-fullscreen {
