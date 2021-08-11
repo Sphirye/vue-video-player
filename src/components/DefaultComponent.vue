@@ -39,6 +39,9 @@
     </div>
 
   </div>
+
+  <!--Uncoment to see video props-->
+
   <!--v-container class="ma-0 pa-0 grey darken-4" style="position: relative;" fluid>
 
     <v-row justify="center" no-gutters>
@@ -162,6 +165,7 @@ export default class DefaultComponent extends Vue {
   }
 
   mounted() {
+    this.$forceUpdate()
     /*if (Hls.isSupported()) {
       let hls = new Hls();
       console.log(hls);
@@ -220,22 +224,19 @@ export default class DefaultComponent extends Vue {
 
 <style>
 .video-container {
+  max-width: 800px;
+  min-width: 400px;
   position: relative;
 }
 
-video {
-  height: auto;
-  max-height: 100%;
-}
-
 .video-windowed {
-  width:auto;
-  height:100%;
+  position: absolute;
+  width: 100%;
 }
 
 .video-fullscreen {
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
 }
 
 .overlay-container {
