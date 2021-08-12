@@ -1,5 +1,5 @@
 <template>
-  <div ref="videoContainer" @mousemove="(e) => { mouseDebounce() }" class="d-flex flex-row justify-center align-end" style="height: 500px;">
+  <div ref="videoContainer" @mousemove="(e) => { mouseDebounce() }" class="video-container d-flex flex-row justify-center align-end">
     <video
       :class="`${ fullscreen ? 'video-fullscreen' : 'video-windowed'}`"
       src="@/assets/dance.mp4"
@@ -11,7 +11,7 @@
       @click="play()"
     ></video>
 
-    <div  :class="`d-flex justify-space-around align-center pa-3 overlay-container ${ hidedControlbar ? 'hided' : '' }`" style="background:rgba(0, 0, 0, 0.521);">
+    <div :class="`d-flex justify-space-around align-center pa-3 overlay-container ${ hidedControlbar ? 'hided' : '' }`" style="background:rgba(0, 0, 0, 0.521);">
 
       <v-btn large icon @click="play()">
         <v-icon color="white" large> far {{ playing ? "fa-pause-circle" : "fa-play-circle" }} </v-icon>
@@ -107,6 +107,7 @@
       </v-col>
     </v-row>
   </v-container-->
+
 </template>
 
 <script lang="ts">
@@ -224,14 +225,13 @@ export default class DefaultComponent extends Vue {
 
 <style>
 .video-container {
-  max-width: 800px;
-  min-width: 400px;
   position: relative;
+  max-width: 400px;
 }
 
 .video-windowed {
-  position: absolute;
-  width: 100%;
+  width: 100%    !important;
+  height: auto   !important;
 }
 
 .video-fullscreen {

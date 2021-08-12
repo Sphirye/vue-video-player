@@ -14,6 +14,4 @@ export default class Home extends Vue {
 
 }
 
-//CA9031@DOLAR
-
 </script>
